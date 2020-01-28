@@ -1,13 +1,16 @@
 from nonebot import on_command, CommandSession
-import random, re
+import random
 
-@on_command('r')
+@on_command('r', only_to_me=False)
 async def dice(session: CommandSession):
     times = int(session.get('times'))
     num = int(session.get('num'))
     temp = [str(random.randint(1,num)) for i in range(times)]
     equation = '+'.join(temp)
-    output = f'.r {times}d{num}的结果是：\n{equation}={eval(equation)}'
+    if times != 1:
+        output = f'{session.ctx["raw_message"]}的结果是：\n{equation}={eval(equation)}'
+    elif times == 1:
+        output = f'{session.ctx["raw_message"]}的结果是：\n{eval(equation)}'
     await session.send(output)
 
 @dice.args_parser

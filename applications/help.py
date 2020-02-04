@@ -8,18 +8,20 @@ async def help(session: CommandSession):
         'PyDiceBot\n'
         'Developed by SoreHait\n'
         'Support: HoshinoYuki\n'
-        'Version: [Early Access] 0.1.1\n'
+        'Version: [Early Access] 0.1.2\n'
         '每个群的配置不通用，玩家需要单独在每个群内设定角色属性及角色名称\n'
+        '重要！直接把本bot踢出次数过多会导致封号\n'
+        '请使用 [.dismiss] 让bot自己退群\n'
         '请使用 [.help 指令] 查看所有指令\n'
         '请使用 [.help [指令名称]] 查看该指令帮助\n'
         '如：.help r\n'
         '---已完成功能---\n'
         '.r .h .st .nn .set\n'
-        '\n'
+        '.dismiss .jrrp\n'
         '---未完成功能---\n'
-        '.dismiss .rules .coc .dnd\n'
+        '.rules .coc .dnd\n'
         '.rc/ra .sc .en .ri\n'
-        '.init .jrrp .draw .deck'
+        '.init .draw .deck'
         )
     elif keyword == 'st':
         await session.send(
@@ -29,8 +31,6 @@ async def help(session: CommandSession):
         '例：.st 力量20 敏捷20\n'
         '.st 力量+10 敏捷-10\n'
         '错误例子：.st 力量10 敏捷+10\n'
-        )
-        await session.send(
         '删除角色属性：.st del [属性名称]\n'
         '删除多个属性时每项用空格分隔\n'
         '例：.st del 力量 敏捷\n'
@@ -56,6 +56,15 @@ async def help(session: CommandSession):
     elif keyword == 'set':
         await session.send(
         '设置房间骰子模式：.set [coc/dnd/1-1000的整数]'
+        )
+    elif keyword == 'jrrp':
+        await session.send(
+        '别问，问就自己试试'
+        )
+    elif keyword == 'dismiss':
+        await session.send(
+        '退群并删除本群数据库\n'
+        '请注意，删除数据库操作不可逆'
         )
 
 @help.args_parser

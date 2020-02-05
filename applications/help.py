@@ -66,6 +66,11 @@ async def help(session: CommandSession):
         '退群并删除本群数据库\n'
         '请注意，删除数据库操作不可逆'
         )
+    elif keyword == 'rc':
+        await session.send(
+        '进行属性检定：.rc [属性名称]\n'
+        '进行任意检定：.rc [任意事件] [数值]\n'
+        )
 
 @help.args_parser
 async def _(session: CommandSession):

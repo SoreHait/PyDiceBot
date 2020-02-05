@@ -9,8 +9,8 @@ COMMAND_START = [
     '。'
 ]
 
-HOST = '192.168.2.137'
+HOST = 'localhost'
 
 PORT = '21321'
 
-API_ROOT = 'http://192.168.2.137:21321'
+API_ROOT = 'http://localhost:21321'

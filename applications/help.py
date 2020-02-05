@@ -8,7 +8,7 @@ async def help(session: CommandSession):
         'PyDiceBot\n'
         'Developed by SoreHait\n'
         'Support: HoshinoYuki\n'
-        'Version: [Early Access] 0.1.2\n'
+        'Version: [Early Access] 0.1.3\n'
         '每个群的配置不通用，玩家需要单独在每个群内设定角色属性及角色名称\n'
         '重要！直接把本bot踢出次数过多会导致封号\n'
         '请使用 [.dismiss] 让bot自己退群\n'

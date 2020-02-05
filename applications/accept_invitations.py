@@ -2,7 +2,8 @@ from nonebot import on_request, RequestSession
 
 accept = False
 whitelist_group = [
-    1011692502
+    1011692502,
+    855596096
 ]
 whitelist_user = [
 

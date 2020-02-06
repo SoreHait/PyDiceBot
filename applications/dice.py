@@ -8,7 +8,7 @@ modifier = [
 
 @on_command('r', only_to_me=False)
 async def dice(session: CommandSession):
-    uid = session.ctx['sender']['user_id']
+    uid = str(session.ctx['sender']['user_id'])
     gid = session.ctx['group_id']
     data = loadjson(gid)
     try:
@@ -23,6 +23,8 @@ async def dice(session: CommandSession):
             mode = 'coc'
         if mode == 'dnd':
             defaultdice = 20
+        elif mode == 'coc':
+            pass
         else:
             defaultdice = int(mode)
         await session.send(f'{nickname}的D{defaultdice}的结果是：\n{random.randint(1,defaultdice)}')
@@ -62,7 +64,7 @@ async def _(session: CommandSession):
 
 @on_command('h', only_to_me=False)
 async def diceprivate(session: CommandSession):
-    uid = session.ctx['sender']['user_id']
+    uid = str(session.ctx['sender']['user_id'])
     gid = session.ctx['group_id']
     data = loadjson(gid)
     try:
@@ -121,7 +123,7 @@ async def rc(session: CommandSession):
         await session.send('指令格式有误，请通过[.help rc]查看帮助')
         return
     gid = session.ctx['group_id']
-    uid = session.ctx['sender']['user_id']
+    uid = str(session.ctx['sender']['user_id'])
     data = loadjson(gid)
     if mode == 'Normal':
         try:
@@ -153,10 +155,10 @@ async def rc(session: CommandSession):
         skname = session.get('skname')
         lvl = 0
         if mode == 'custom':
-            lvl = session.get('lvl')
+            lvl = int(session.get('lvl'))
         else:
             try:
-                lvl = data[uid][skname]
+                lvl = int(data[uid][skname])
             except Exception:
                 await session.send('未设定此属性值')
                 return

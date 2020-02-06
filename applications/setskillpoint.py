@@ -4,7 +4,7 @@ from app_addon.json_operations import dumpjson, loadjson
 
 @on_command('st', only_to_me=False)
 async def setsp(session: CommandSession):
-    uid = session.ctx['sender']['user_id']
+    uid = str(session.ctx['sender']['user_id'])
     gid = session.ctx['group_id']
     mode = session.get('mode')
     data = loadjson(gid)
@@ -15,6 +15,10 @@ async def setsp(session: CommandSession):
             await session.send('删除成功')
     elif mode == 'change':
         changelist = session.get('changelist')
+        try:
+            data[uid]
+        except Exception:
+            data[uid] = {}
         for item in changelist:
             skname = re.search(r'.+?(?=(\d))',item).group()
             lvl = re.search(r'(\d)+',item).group()
@@ -39,9 +43,9 @@ async def setsp(session: CommandSession):
             except Exception:
                 output.append(f"{skname}：未设定原值")
                 continue
-            shiftlvl = re.search(r'[\+\-\*\/](\d)+',item).group()
-            newlvl = eval(f"{oglvl}{shiftlvl}")
-            data[uid][skname] = newlvl
+            shiftlvl = re.search(r'[0-9,\.,\+,\-,\*,\/]+',item).group()
+            newlvl = int(eval(f"{oglvl}{shiftlvl}"))
+            data[uid][skname] = str(newlvl)
             output.append(f"{skname}：{oglvl}{shiftlvl}={newlvl}")
         await session.send('{}的属性已更新：\n{}'.format(nickname, '\n'.join(output)))
     elif mode == 'del':
@@ -56,6 +60,11 @@ async def setsp(session: CommandSession):
             nickname = data['name'][uid]
         except Exception:
             nickname = session.ctx['sender']['nickname']
+        try:
+            data[uid]
+        except Exception:
+            await session.send(f'{nickname}当前未设定任何属性')
+            return
         output = []
         for item in data[uid].keys():
             output.append(f'{item}:{data[uid][item]}')

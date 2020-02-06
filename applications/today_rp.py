@@ -4,7 +4,7 @@ from app_addon.json_operations import loadjson
 
 @on_command('jrrp', aliases=('今日日批','今日人品'), only_to_me=False)
 async def jrrp(session: CommandSession):
-    uid = session.ctx['sender']['user_id']
+    uid = str(session.ctx['sender']['user_id'])
     gid = session.ctx['group_id']
     data = loadjson(gid)
     try:

@@ -4,9 +4,13 @@ from app_addon.json_operations import dumpjson, loadjson
 @on_command('nn', only_to_me=False)
 async def name(session: CommandSession):
     name = session.get('name')
-    uid = session.ctx['sender']['user_id']
+    uid = str(session.ctx['sender']['user_id'])
     gid = session.ctx['group_id']
     data = loadjson(gid)
+    try:
+        data['name']
+    except Exception:
+        data['name'] = {}
     data['name'][uid] = name
     dumpjson(gid, data)
     await session.send('设定成功')

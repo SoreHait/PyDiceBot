@@ -1,16 +1,10 @@
 from nonebot import on_command, CommandSession
-import random, json
+import random
+from app_addon.json_operations import loadjson
 
 modifier = [
     '-5','-4','-4','-3','-3','-2','-2','-1','-1','+0','+0','+1','+1','+2','+2','+3','+3','+4','+4','+5','+5','+6','+6','+7','+7','+8','+8','+9','+9','+10'
 ]
-
-def loadjson(gid):
-    with open(f'.//data//{gid}.json', 'w+', encoding='utf-8') as f:
-        try:
-            return json.load(f)
-        except Exception:
-            return {}
 
 @on_command('r', only_to_me=False)
 async def dice(session: CommandSession):

@@ -1,15 +1,5 @@
 from nonebot import on_command, CommandSession
-import json
-
-def loadjson(gid):
-    with open(f'.//data//{gid}.json', 'w+', encoding='utf-8') as f:
-        try:
-            return json.load(f)
-        except Exception:
-            return {}
-def dumpjson(gid, data):
-    with open(f'.//data//{gid}.json', 'w+', encoding='utf-8') as f:
-        json.dump(data, f, indent=4)
+from app_addon.json_operations import dumpjson, loadjson
 
 @on_command('nn', only_to_me=False)
 async def name(session: CommandSession):

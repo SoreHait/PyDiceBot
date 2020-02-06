@@ -1,12 +1,6 @@
 from nonebot import on_command, CommandSession
 import json, random
-
-def loadjson(gid):
-    with open(f'.//data//{gid}.json', 'w+', encoding='utf-8') as f:
-        try:
-            return json.load(f)
-        except Exception:
-            return {}
+from app_addon.json_operations import loadjson
 
 @on_command('jrrp', aliases=('今日日批','今日人品'), only_to_me=False)
 async def jrrp(session: CommandSession):

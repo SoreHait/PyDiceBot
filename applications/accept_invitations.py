@@ -1,13 +1,16 @@
 from nonebot import on_request, RequestSession
+import json
 
-accept = False
-whitelist_group = [
-    1011692502,
-    855596096
-]
-whitelist_user = [
+with open('.//config//whitelist.json', 'w+', encoding='utf-8') as f:
+    try:
+        whitelist = json.load(f)
+    except Exception:
+        json.dump({'accept':True,'whiteusers':[],'whitegroups':[]}, f, indent=4)
+        whitelist = json.load(f)
 
-]
+accept = whitelist['accept']
+whitelist_group = whitelist['whitegroups']
+whitelist_user = whitelist['whiteusers']
 
 @on_request('group')
 async def _(session: RequestSession):

@@ -1,20 +1,20 @@
 from nonebot import on_command, CommandSession
-import sqlite3, random
+import json, random
+
+def loadjson(gid):
+    with open(f'.//data//{gid}.json', 'w+', encoding='utf-8') as f:
+        try:
+            return json.load(f)
+        except Exception:
+            return {}
 
 @on_command('jrrp', aliases=('今日日批','今日人品'), only_to_me=False)
 async def jrrp(session: CommandSession):
     uid = session.ctx['sender']['user_id']
     gid = session.ctx['group_id']
-    db = sqlite3.connect(f'.//data//{gid}.db')
-    c = db.cursor()
+    data = loadjson(gid)
     try:
-        c.execute(f"SELECT NAME FROM NAME WHERE UID='{uid}'")
+        nickname = data['name'][uid]
     except Exception:
-        c.execute(f"CREATE TABLE NAME (UID TEXT PRIMARY KEY NOT NULL, NAME TEXT NOT NULL)")
-        c.execute(f"SELECT NAME FROM NAME WHERE UID='{uid}'")
-    fetch = c.fetchone()
-    if str(fetch) == 'None':
         nickname = session.ctx['sender']['nickname']
-    else:
-        nickname = fetch[0]
     await session.send(f'{nickname}今天的人品值：{random.randint(1,100)}')

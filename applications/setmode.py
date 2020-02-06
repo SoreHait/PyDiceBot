@@ -1,22 +1,24 @@
 from nonebot import on_command, CommandSession
-import sqlite3
+import json
+
+def loadjson(gid):
+    with open(f'.//data//{gid}.json', 'w+', encoding='utf-8') as f:
+        try:
+            return json.load(f)
+        except Exception:
+            return {}
+def dumpjson(gid, data):
+    with open(f'.//data//{gid}.json', 'w+', encoding='utf-8') as f:
+        json.dump(data, f, indent=4)
 
 @on_command('set', only_to_me=False)
 async def setmode(session: CommandSession):
     mode = session.get('mode')
     if (mode in ['coc','dnd']) or (str(type(mode)) == "<class 'int'>" and 1 <= mode <= 1000):
         gid = session.ctx['group_id']
-        db = sqlite3.connect(f'.//data//{gid}.db')
-        c = db.cursor()
-        c.execute(f"SELECT COUNT(*) FROM sqlite_master WHERE TYPE='table' AND NAME='MODE'")
-        if c.fetchone()[0] == 0:
-            c.execute(f"CREATE TABLE MODE (MODE TEXT PRIMARY KEY NOT NULL)")
-            c.execute(f"INSERT INTO MODE (MODE) VALUES ('{mode}')")
-        else:
-            c.execute(f"DELETE FROM MODE")
-            c.execute(f"INSERT INTO MODE (MODE) VALUES ('{mode}')")
-        db.commit()
-        db.close()
+        data = loadjson(gid)
+        data['mode'] = mode
+        dumpjson(gid, data)
         await session.send('设定成功')
     else:
         await session.send('请将模式设定为coc，dnd或1-1000范围内的整数')

@@ -1,83 +1,75 @@
 from nonebot import on_command, CommandSession
-import sqlite3, re
+import json, re
+
+def loadjson(gid):
+    with open(f'.//data//{gid}.json', 'w+', encoding='utf-8') as f:
+        try:
+            return json.load(f)
+        except Exception:
+            return {}
+def dumpjson(gid, data):
+    with open(f'.//data//{gid}.json', 'w+', encoding='utf-8') as f:
+        json.dump(data, f, indent=4)
 
 @on_command('st', only_to_me=False)
 async def setsp(session: CommandSession):
     uid = session.ctx['sender']['user_id']
     gid = session.ctx['group_id']
-    db = sqlite3.connect(f'.//data//{gid}.db')
     mode = session.get('mode')
-    c = db.cursor()
+    data = loadjson(gid)
     if mode == 'clr':
-        c.execute(f"DELETE FROM '{uid}'")
-        await session.send('删除成功')
+        try:
+            del data[uid]
+        finally:
+            await session.send('删除成功')
     elif mode == 'change':
         changelist = session.get('changelist')
-        c.execute(f"SELECT COUNT(*) FROM sqlite_master WHERE TYPE='table' AND NAME='{uid}'")
-        if c.fetchone()[0] == 0:
-            c.execute(f"CREATE TABLE '{uid}' (SKNAME TEXT PRIMARY KEY NOT NULL, LVL TEXT NOT NULL)")
-            for item in changelist:
-                skname = re.search(r'.+?(?=(\d))',item).group()
-                lvl = re.search(r'(\d)+',item).group()
-                c.execute(f"INSERT INTO '{uid}' (SKNAME,LVL) VALUES ('{skname}','{lvl}')")
-        else:
-            for item in changelist:
-                skname = re.search(r'.+?(?=(\d))',item).group()
-                lvl = re.search(r'(\d)+',item).group()
-                c.execute(f"SELECT COUNT(*) FROM '{uid}' WHERE SKNAME='{skname}'")
-                if c.fetchone()[0] == 0:
-                    c.execute(f"INSERT INTO '{uid}' (SKNAME,LVL) VALUES ('{skname}','{lvl}')")
-                else:
-                    c.execute(f"UPDATE '{uid}' SET LVL='{lvl}' WHERE SKNAME='{skname}'")
+        for item in changelist:
+            skname = re.search(r'.+?(?=(\d))',item).group()
+            lvl = re.search(r'(\d)+',item).group()
+            data[uid][skname] = lvl
         await session.send('设定成功')
     elif mode == 'shift':
         try:
-            c.execute(f"SELECT NAME FROM NAME WHERE UID='{uid}'")
+            nickname = data['name'][uid]
         except Exception:
-            c.execute(f"CREATE TABLE NAME (UID TEXT PRIMARY KEY NOT NULL, NAME TEXT NOT NULL)")
-            c.execute(f"SELECT NAME FROM NAME WHERE UID='{uid}'")
-        fetch = c.fetchone()
-        if str(fetch) == 'None':
             nickname = session.ctx['sender']['nickname']
-        else:
-            nickname = fetch[0]
         shiftlist = session.get('shiftlist')
-        c.execute(f"SELECT COUNT(*) FROM sqlite_master WHERE TYPE='table' AND NAME='{uid}'")
-        if c.fetchone()[0] == 0:
+        try:
+            data[uid]
+        except Exception:
             await session.send(f'{nickname}未设定属性值')
-        else:
-            output = []
-            for item in shiftlist:
-                skname = re.search(r'.+?(?=[\+\-\*\/])',item).group()
-                c.execute(f"SELECT COUNT(*) FROM '{uid}' WHERE SKNAME='{skname}'")
-                if c.fetchone()[0] == 0:
-                    output.append(f"{skname}：未设定原值")
-                else:
-                    c.execute(f"SELECT LVL FROM '{uid}' WHERE SKNAME='{skname}'")
-                    oglvl = str(c.fetchone()[0])
-                    shiftlvl = re.search(r'[\+\-\*\/](\d)+',item).group()
-                    newlvl = eval(f"{oglvl}{shiftlvl}")
-                    c.execute(f"UPDATE '{uid}' SET LVL='{newlvl}' WHERE SKNAME='{skname}'")
-                    output.append(f"{skname}：{oglvl}{shiftlvl}={newlvl}")
-            await session.send('{}的属性已更新：\n{}'.format(nickname, '\n'.join(output)))
+            return
+        output = []
+        for item in shiftlist:
+            skname = re.search(r'.+?(?=[\+\-\*\/])',item).group()
+            try:
+                oglvl = data[uid][skname]
+            except Exception:
+                output.append(f"{skname}：未设定原值")
+                continue
+            shiftlvl = re.search(r'[\+\-\*\/](\d)+',item).group()
+            newlvl = eval(f"{oglvl}{shiftlvl}")
+            data[uid][skname] = newlvl
+            output.append(f"{skname}：{oglvl}{shiftlvl}={newlvl}")
+        await session.send('{}的属性已更新：\n{}'.format(nickname, '\n'.join(output)))
     elif mode == 'del':
         for item in session.get('dellist'):
-            c.execute(f"DELETE FROM '{uid}' WHERE SKNAME='{item}'")
+            try:
+                del data[uid][item]
+            finally:
+                pass
         await session.send('删除成功')
     elif mode == 'show':
-        c.execute(f"SELECT NAME FROM NAME WHERE UID='{uid}'")
-        fetch = c.fetchone()
-        if str(fetch) == 'None':
+        try:
+            nickname = data['name'][uid]
+        except Exception:
             nickname = session.ctx['sender']['nickname']
-        else:
-            nickname = fetch[0]
-        c.execute(f"SELECT * FROM '{uid}'")
         output = []
-        for item in c.fetchall():
-            output.append(f'{item[0]}:{item[1]}')
+        for item in data[uid].keys():
+            output.append(f'{item}:{data[uid][item]}')
         await session.send('{}的当前属性：\n{}'.format(nickname,'\n'.join(output)))
-    db.commit()
-    db.close()
+    dumpjson(gid, data)
 
 @setsp.args_parser
 async def _(session: CommandSession):

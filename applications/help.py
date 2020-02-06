@@ -17,11 +17,11 @@ async def help(session: CommandSession):
         '如：.help r\n'
         '---已完成功能---\n'
         '.r .h .st .nn .set\n'
-        '.dismiss .jrrp\n'
+        '.dismiss .jrrp .rc/ra\n'
         '---未完成功能---\n'
         '.rules .coc .dnd\n'
-        '.rc/ra .sc .en .ri\n'
-        '.init .draw .deck'
+        '.sc .en .ri.init\n'
+        '.draw .deck'
         )
     elif keyword == 'st':
         await session.send(
@@ -70,6 +70,11 @@ async def help(session: CommandSession):
         await session.send(
         '进行属性检定：.rc [属性名称]\n'
         '进行任意检定：.rc [任意事件] [数值]\n'
+        )
+    elif keyword == 'ra':
+        await session.send(
+        '进行属性检定：.ra [属性名称]\n'
+        '进行任意检定：.ra [任意事件] [数值]\n'
         )
 
 @help.args_parser

@@ -79,20 +79,24 @@ async def diceprivate(session: CommandSession):
             mode = 'coc'
         if mode == 'dnd':
             defaultdice = 20
+        elif mode == 'coc':
+            pass
         else:
             defaultdice = int(mode)
         await session.send(f'{nickname}的D{defaultdice}的结果是：\n{random.randint(1,defaultdice)}',ensure_private=True)
+        await session.send('掷骰结果已私聊发送')
     elif session.get('mode') == 'INT':
         try:
             num = int(session.get('num'))
             await session.send(f'{nickname}的D{num}的结果是：\n{random.randint(1,num)}',ensure_private=True)
+            await session.send('掷骰结果已私聊发送')
         except Exception:
-            await session.send('参数不合法，用.help h查看帮助',ensure_private=True)
+            await session.send('参数不合法，用.help h查看帮助')
     elif session.get('mode') == 'D':
         times = int(session.get('times'))
         num = int(session.get('num'))
         if not (times > 0 and num > 0):
-            await session.send('参数不合法',ensure_private=True)
+            await session.send('参数不合法，用.help h查看帮助')
             return
         temp = [str(random.randint(1,num)) for i in range(times)]
         expression = '+'.join(temp)
@@ -101,6 +105,7 @@ async def diceprivate(session: CommandSession):
         elif times == 1:
             output = f'{nickname}的{session.current_arg_text.upper()}的结果是：\n{eval(expression)}'
         await session.send(output,ensure_private=True)
+        await session.send('掷骰结果已私聊发送')
 
 @diceprivate.args_parser
 async def _(session: CommandSession):
@@ -122,6 +127,8 @@ async def rc(session: CommandSession):
     if mode == 'Error':
         await session.send('指令格式有误，请通过[.help rc]查看帮助')
         return
+    elif mode == 'NoText':
+        await session.send('请输入技能名')
     gid = session.ctx['group_id']
     uid = str(session.ctx['sender']['user_id'])
     data = loadjson(gid)
@@ -138,7 +145,7 @@ async def rc(session: CommandSession):
         mod = ''
         skname = session.get('skname')
         try:
-            lvl = data[uid][skname]
+            lvl = int(data[uid][skname])
         except Exception:
             await session.send('未设定此属性值')
             return
@@ -150,7 +157,7 @@ async def rc(session: CommandSession):
             mod = '+10'
         roll = str(random.randint(1,20))
         expression = ''.join([roll,mod])
-        await session.send(f'{nickname}的{skname}检定的结果是：\n{expression}={eval(expression)}')
+        await session.send(f'{nickname}的{skname}检定的结果是：\nD20+调整值={expression}={eval(expression)}')
     else:
         skname = session.get('skname')
         lvl = 0
@@ -166,13 +173,13 @@ async def rc(session: CommandSession):
         out = ''
         if roll <= 5:
             out = '大成功'
-        elif roll >= 95:
+        elif roll >= 96:
             out = '大失败'
-        elif lvl/2 <= roll < lvl:
+        elif lvl/2 < roll <= lvl:
             out = '成功'
-        elif lvl/5 <= roll < lvl/2:
+        elif lvl/5 < roll <= lvl/2:
             out = '困难成功'
-        elif roll < lvl/5:
+        elif roll <= lvl/5:
             out = '极难成功'
         else:
             out = '失败'
@@ -180,6 +187,9 @@ async def rc(session: CommandSession):
 
 @rc.args_parser
 async def _(session: CommandSession):
+    if len(session.current_arg_text) == 0:
+        session.state['mode'] = 'NoText'
+        return
     rawtext = session.current_arg_text.upper()
     replacel = {
         'STR':'力量',
@@ -215,3 +225,4 @@ async def _(session: CommandSession):
             session.state['mode'] = 'Error'
     else:
         session.state['mode'] = 'Error'
+    return

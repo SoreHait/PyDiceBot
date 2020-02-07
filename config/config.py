@@ -11,6 +11,6 @@ COMMAND_START = [
 
 HOST = 'localhost'
 
-PORT = '21321'
+PORT = '12345'
 
-API_ROOT = 'http://localhost:21321'
+API_ROOT = 'http://localhost:12345'

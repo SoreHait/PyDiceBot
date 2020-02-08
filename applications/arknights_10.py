@@ -23,14 +23,14 @@ async def draw10(session: CommandSession):
     for i in stars:
         if 1 <= i <= 40:
             op = random.choice(operators['3'])
-            output.append(f'【3星】{op}')
+            output.append(f'【⭐⭐⭐】{op}')
         elif 41 <= i <= 90:
             op = random.choice(operators['4'])
-            output.append(f'【4星】{op}')
+            output.append(f'【⭐⭐⭐⭐】{op}')
         elif 91 <= i <= 98:
             op = random.choice(operators['5'])
-            output.append(f'【5星】{op}')
+            output.append(f'【⭐⭐⭐⭐⭐】{op}')
         elif i in [99,100]:
             op = random.choice(operators['6'])
-            output.append(f'【6星】{op}')
+            output.append(f'【⭐⭐⭐⭐⭐⭐】{op}')
     await session.send('{}的方舟十连抽出了：\n{}'.format(nickname, '\n'.join(output)))

@@ -1,6 +1,7 @@
 from nonebot import on_command, CommandSession
 from os import path, remove
 
+
 @on_command('dismiss', only_to_me=False)
 async def dismiss(session: CommandSession):
     gid = int(session.ctx['group_id'])

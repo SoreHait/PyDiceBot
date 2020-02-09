@@ -1,6 +1,7 @@
 from nonebot import on_command, CommandSession
 from app_addon.json_operations import dumpjson, loadjson
 
+
 @on_command('set', only_to_me=False)
 async def setmode(session: CommandSession):
     mode = session.get('mode')
@@ -24,17 +25,18 @@ async def setmode(session: CommandSession):
             currentmode = int(currentmode)
         except Exception:
             pass
-        if currentmode in ['coc','dnd']:
+        if currentmode in ['coc', 'dnd']:
             await session.send(f'当前规则是{currentmode}规则')
         else:
             await session.send(f'当前默认骰是{currentmode}')
-    elif (mode in ['coc','dnd']) or (str(type(mode)) == "<class 'int'>" and 1 <= mode <= 1000):
+    elif (mode in ['coc', 'dnd']) or (str(type(mode)) == "<class 'int'>" and 1 <= mode <= 1000):
         data = loadjson(gid)
         data['mode'] = mode
         dumpjson(gid, data)
         await session.send('设定成功')
     else:
         await session.send('请将模式设定为coc，dnd或1-1000范围内的整数')
+
 
 @setmode.args_parser
 async def _(session: CommandSession):

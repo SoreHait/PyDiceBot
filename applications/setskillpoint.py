@@ -2,6 +2,7 @@ from nonebot import on_command, CommandSession
 import re
 from app_addon.json_operations import dumpjson, loadjson
 
+
 @on_command('st', only_to_me=False)
 async def setsp(session: CommandSession):
     uid = str(session.ctx['sender']['user_id'])
@@ -20,8 +21,8 @@ async def setsp(session: CommandSession):
         except Exception:
             data[uid] = {}
         for item in changelist:
-            skname = re.search(r'.+?(?=(\d))',item).group()
-            lvl = re.search(r'(\d)+',item).group()
+            skname = re.search(r'.+?(?=(\d))', item).group()
+            lvl = re.search(r'(\d)+', item).group()
             data[uid][skname] = lvl
         await session.send('设定成功')
     elif mode == 'shift':
@@ -37,13 +38,13 @@ async def setsp(session: CommandSession):
             return
         output = []
         for item in shiftlist:
-            skname = re.search(r'.+?(?=[\+\-\*\/])',item).group()
+            skname = re.search(r'.+?(?=[\+\-\*\/])', item).group()
             try:
                 oglvl = data[uid][skname]
             except Exception:
                 output.append(f"{skname}：未设定原值")
                 continue
-            shiftlvl = re.search(r'[0-9,\.,\+,\-,\*,\/]+',item).group()
+            shiftlvl = re.search(r'[0-9,\.,\+,\-,\*,\/]+', item).group()
             newlvl = int(eval(f"{oglvl}{shiftlvl}"))
             data[uid][skname] = str(newlvl)
             output.append(f"{skname}：{oglvl}{shiftlvl}={newlvl}")
@@ -68,46 +69,47 @@ async def setsp(session: CommandSession):
         output = []
         for item in data[uid].keys():
             output.append(f'{item}:{data[uid][item]}')
-        await session.send('{}的当前属性：\n{}'.format(nickname,'\n'.join(output)))
+        await session.send('{}的当前属性：\n{}'.format(nickname, '\n'.join(output)))
     dumpjson(gid, data)
+
 
 @setsp.args_parser
 async def _(session: CommandSession):
     rawtext = session.current_arg_text.upper()
     replacel = {
-        '：':':',
-        'STR':'力量',
-        'DEX':'敏捷',
-        'CON':'体质',
-        'INT':'智力',
-        '灵感':'智力',
-        'WIS':'感知',
-        'CHA':'魅力',
-        'SIZ':'体型',
-        'APP':'外貌',
-        'POW':'意志',
-        'EDU':'教育',
-        'LUCK':'幸运',
-        'HP':'生命值',
-        'MP':'魔力值',
-        'SAN':'理智值',
-        '侦查':'侦察',
-        '＋':'+',
-        '－':'-',
-        '×':'*',
-        'X':'*',
-        '÷':'/',
+        '：': ':',
+        'STR': '力量',
+        'DEX': '敏捷',
+        'CON': '体质',
+        'INT': '智力',
+        '灵感': '智力',
+        'WIS': '感知',
+        'CHA': '魅力',
+        'SIZ': '体型',
+        'APP': '外貌',
+        'POW': '意志',
+        'EDU': '教育',
+        'LUCK': '幸运',
+        'HP': '生命值',
+        'MP': '魔力值',
+        'SAN': '理智值',
+        '侦查': '侦察',
+        '＋': '+',
+        '－': '-',
+        '×': '*',
+        'X': '*',
+        '÷': '/',
     }
     for key in replacel.keys():
-        rawtext = rawtext.replace(key,replacel[key])
+        rawtext = rawtext.replace(key, replacel[key])
     if session.current_arg_text == 'clr':
         session.state['mode'] = 'clr'
     elif session.current_arg_text == 'show':
         session.state['mode'] = 'show'
-    elif str(re.search(r'[\+\-\*\/]',rawtext)) != 'None':
+    elif str(re.search(r'[\+\-\*\/]', rawtext)) != 'None':
         session.state['mode'] = 'shift'
         session.state['shiftlist'] = rawtext.split(' ')
-    elif session.current_arg_text.split(' ',1)[0] == 'del':
+    elif session.current_arg_text.split(' ', 1)[0] == 'del':
         session.state['mode'] = 'del'
         session.state['dellist'] = rawtext.split(' ')[1:]
     else:

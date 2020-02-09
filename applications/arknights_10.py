@@ -3,6 +3,7 @@ import random
 from app_addon.json_operations import loadjson
 from json import load
 
+
 @on_command('draw', aliases=('方舟十连',), only_to_me=False)
 async def draw10(session: CommandSession):
     uid = str(session.ctx['sender']['user_id'])
@@ -19,7 +20,7 @@ async def draw10(session: CommandSession):
         await session.send('干员数据库读取错误')
         return
     output = []
-    stars = [random.randint(1,100) for i in range(10)]
+    stars = [random.randint(1, 100) for i in range(10)]
     for i in stars:
         if 1 <= i <= 40:
             op = random.choice(operators['3'])
@@ -30,7 +31,7 @@ async def draw10(session: CommandSession):
         elif 91 <= i <= 98:
             op = random.choice(operators['5'])
             output.append(f'【5星】{op}')
-        elif i in [99,100]:
+        elif i in [99, 100]:
             op = random.choice(operators['6'])
             output.append(f'【6星】{op}')
     await session.send('{}的方舟十连抽出了：\n{}'.format(nickname, '\n'.join(output)))

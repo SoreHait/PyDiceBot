@@ -1,6 +1,7 @@
 from nonebot import on_command, CommandSession
 from json import load
 
+
 @on_command('help', only_to_me=False)
 async def help(session: CommandSession):
     keyword = session.get('keyword')
@@ -11,6 +12,7 @@ async def help(session: CommandSession):
     except KeyError:
         helpText = '无此帮助页'
     await session.send(helpText)
+
 
 @help.args_parser
 async def _(session: CommandSession):

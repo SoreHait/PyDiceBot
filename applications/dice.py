@@ -3,8 +3,9 @@ import random
 from app_addon.json_operations import loadjson
 
 modifier = [
-    '-5','-4','-4','-3','-3','-2','-2','-1','-1','+0','+0','+1','+1','+2','+2','+3','+3','+4','+4','+5','+5','+6','+6','+7','+7','+8','+8','+9','+9','+10'
+    '-5', '-4', '-4', '-3', '-3', '-2', '-2', '-1', '-1', '+0', '+0', '+1', '+1', '+2', '+2', '+3', '+3', '+4', '+4', '+5', '+5', '+6', '+6', '+7', '+7', '+8', '+8', '+9', '+9', '+10'
 ]
+
 
 @on_command('r', only_to_me=False)
 async def dice(session: CommandSession):
@@ -40,7 +41,7 @@ async def dice(session: CommandSession):
         if not (times > 0 and num > 0):
             await session.send('参数不合法')
             return
-        temp = [str(random.randint(1,num)) for i in range(times)]
+        temp = [str(random.randint(1, num)) for i in range(times)]
         expression = '+'.join(temp)
         if times != 1:
             output = f'{nickname}的{session.current_arg_text.upper()}的结果是：\n{expression}={eval(expression)}'
@@ -48,12 +49,13 @@ async def dice(session: CommandSession):
             output = f'{nickname}的{session.current_arg_text.upper()}的结果是：\n{eval(expression)}'
         await session.send(output)
 
+
 @dice.args_parser
 async def _(session: CommandSession):
     if session.current_arg_text == '':
         session.state['mode'] = 'default'
     elif 'D' in session.current_arg_text.upper():
-        args = session.current_arg_text.upper().split('D',1)
+        args = session.current_arg_text.upper().split('D', 1)
         session.state['times'] = args[0]
         session.state['num'] = args[1]
         session.state['mode'] = 'D'
@@ -61,6 +63,7 @@ async def _(session: CommandSession):
         session.state['mode'] = 'INT'
         session.state['num'] = session.current_arg_text
     return
+
 
 @on_command('h', only_to_me=False)
 async def diceprivate(session: CommandSession):
@@ -83,12 +86,12 @@ async def diceprivate(session: CommandSession):
             pass
         else:
             defaultdice = int(mode)
-        await session.send(f'{nickname}的D{defaultdice}的结果是：\n{random.randint(1,defaultdice)}',ensure_private=True)
+        await session.send(f'{nickname}的D{defaultdice}的结果是：\n{random.randint(1,defaultdice)}', ensure_private=True)
         await session.send('掷骰结果已私聊发送')
     elif session.get('mode') == 'INT':
         try:
             num = int(session.get('num'))
-            await session.send(f'{nickname}的D{num}的结果是：\n{random.randint(1,num)}',ensure_private=True)
+            await session.send(f'{nickname}的D{num}的结果是：\n{random.randint(1,num)}', ensure_private=True)
             await session.send('掷骰结果已私聊发送')
         except Exception:
             await session.send('参数不合法，用.help h查看帮助')
@@ -98,21 +101,22 @@ async def diceprivate(session: CommandSession):
         if not (times > 0 and num > 0):
             await session.send('参数不合法，用.help h查看帮助')
             return
-        temp = [str(random.randint(1,num)) for i in range(times)]
+        temp = [str(random.randint(1, num)) for i in range(times)]
         expression = '+'.join(temp)
         if times != 1:
             output = f'{nickname}的{session.current_arg_text.upper()}的结果是：\n{expression}={eval(expression)}'
         elif times == 1:
             output = f'{nickname}的{session.current_arg_text.upper()}的结果是：\n{eval(expression)}'
-        await session.send(output,ensure_private=True)
+        await session.send(output, ensure_private=True)
         await session.send('掷骰结果已私聊发送')
+
 
 @diceprivate.args_parser
 async def _(session: CommandSession):
     if session.current_arg_text == '':
         session.state['mode'] = 'default'
     elif 'D' in session.current_arg_text.upper():
-        args = session.current_arg_text.upper().split('D',1)
+        args = session.current_arg_text.upper().split('D', 1)
         session.state['times'] = args[0]
         session.state['num'] = args[1]
         session.state['mode'] = 'D'
@@ -120,6 +124,7 @@ async def _(session: CommandSession):
         session.state['mode'] = 'INT'
         session.state['num'] = session.current_arg_text
     return
+
 
 @on_command('rc', aliases=('ra',), only_to_me=False)
 async def rc(session: CommandSession):
@@ -155,8 +160,8 @@ async def rc(session: CommandSession):
             mod = '-5'
         elif lvl > 30:
             mod = '+10'
-        roll = str(random.randint(1,20))
-        expression = ''.join([roll,mod])
+        roll = str(random.randint(1, 20))
+        expression = ''.join([roll, mod])
         await session.send(f'{nickname}的{skname}检定的结果是：\nD20+调整值={expression}={eval(expression)}')
     else:
         skname = session.get('skname')
@@ -169,7 +174,7 @@ async def rc(session: CommandSession):
             except Exception:
                 await session.send('未设定此属性值')
                 return
-        roll = random.randint(1,100)
+        roll = random.randint(1, 100)
         out = ''
         if roll <= 5:
             out = '大成功'
@@ -185,6 +190,7 @@ async def rc(session: CommandSession):
             out = '失败'
         await session.send(f'{nickname}的{skname}检定的结果是：\n{roll}/{lvl}，{out}')
 
+
 @rc.args_parser
 async def _(session: CommandSession):
     if len(session.current_arg_text) == 0:
@@ -192,25 +198,25 @@ async def _(session: CommandSession):
         return
     rawtext = session.current_arg_text.upper()
     replacel = {
-        'STR':'力量',
-        'DEX':'敏捷',
-        'CON':'体质',
-        'INT':'智力',
-        '灵感':'智力',
-        'WIS':'感知',
-        'CHA':'魅力',
-        'SIZ':'体型',
-        'APP':'外貌',
-        'POW':'意志',
-        'EDU':'教育',
-        'LUCK':'幸运',
-        'HP':'生命值',
-        'MP':'魔力值',
-        'SAN':'理智值',
-        '侦查':'侦察',
+        'STR': '力量',
+        'DEX': '敏捷',
+        'CON': '体质',
+        'INT': '智力',
+        '灵感': '智力',
+        'WIS': '感知',
+        'CHA': '魅力',
+        'SIZ': '体型',
+        'APP': '外貌',
+        'POW': '意志',
+        'EDU': '教育',
+        'LUCK': '幸运',
+        'HP': '生命值',
+        'MP': '魔力值',
+        'SAN': '理智值',
+        '侦查': '侦察',
     }
     for key in replacel.keys():
-        rawtext = rawtext.replace(key,replacel[key])
+        rawtext = rawtext.replace(key, replacel[key])
     args = rawtext.split(' ')
     length = len(args)
     if length == 1:

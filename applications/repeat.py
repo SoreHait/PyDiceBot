@@ -1,5 +1,5 @@
 from nonebot import on_command, CommandSession
-from nonebot import on_natural_language, NLPSession
+from nonebot import on_natural_language, NLPSession, IntentCommand
 from app_addon.json_operations import loadjson, dumpjson
 from random import randint
 
@@ -17,9 +17,9 @@ async def repeat(session: CommandSession):
         try:
             rate = data['repRate']
         except Exception:
-            await session.send('当前复读几率为0')
+            await session.send('当前复读几率为0%')
             return
-        await session.send(f'当前复读机率为{rate}')
+        await session.send(f'当前复读机率为{rate}%')
     elif mode == 'set':
         role = session.ctx['sender']['role']
         if role not in ['owner', 'admin']:
@@ -36,6 +36,7 @@ async def repeat(session: CommandSession):
             data = loadjson(gid)
             data['repRate'] = rate
             dumpjson(gid, data)
+            await session.send('设定成功')
         else:
             await session.send('请输入一个在0-100之间的数')
 
@@ -59,9 +60,9 @@ async def _(session: CommandSession):
     return
 
 
-@on_natural_language(only_to_me=False)
-async def _(session: NLPSession):
-    text = session.msg_text
+@on_command('sayagain')
+async def sayagain(session: CommandSession):
+    text = session.current_arg
     gid = session.ctx['group_id']
     data = loadjson(gid)
     try:
@@ -71,5 +72,11 @@ async def _(session: NLPSession):
     if rate == 0:
         return
     else:
-        if randint(0,99) == list(range(rate)):
+        if randint(0,99) in list(range(rate)):
             await session.send(text)
+
+
+@on_natural_language(only_to_me=False)
+async def _(session: NLPSession):
+    text = session.msg_text
+    return IntentCommand(100.0, 'sayagain', current_arg=text)

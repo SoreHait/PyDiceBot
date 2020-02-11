@@ -3,7 +3,7 @@ from app_addon.json_operations import loadjson, dumpjson
 import random
 
 
-@on_command('ri')
+@on_command('ri', only_to_me=False)
 async def rollInitiative(session: CommandSession):
     shift = session.get('shift')
     try:
@@ -50,7 +50,7 @@ async def _(session: CommandSession):
     return
 
 
-@on_command('init')
+@on_command('init', only_to_me=False)
 async def readInitiative(session: CommandSession):
     gid = session.ctx['group_id']
     data = loadjson(gid)

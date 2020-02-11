@@ -46,12 +46,17 @@ async def _(session: CommandSession):
     if session.current_arg_text == '':
         session.state['mode'] = 'None'
     elif mode[0] == 'set':
+        try:
+            session.state['rate'] = mode[1]
+        except Exception:
+            session.state['mode'] = 'None'
+            return
         session.state['mode'] = 'set'
-        session.state['rate'] = mode[1]
     elif mode[0] == 'show':
         session.state['mode'] = 'show'
     else:
         session.state['mode'] = 'Else'
+    return
 
 
 @on_natural_language(only_to_me=False)

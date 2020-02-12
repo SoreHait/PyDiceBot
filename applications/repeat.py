@@ -72,7 +72,7 @@ async def sayagain(session: CommandSession):
     if rate == 0:
         return
     else:
-        if randint(0,99) in list(range(rate)):
+        if randint(1, 100) <= rate:
             await session.send(text)
 
 

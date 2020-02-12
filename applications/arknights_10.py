@@ -4,7 +4,7 @@ from app_addon.json_operations import loadjson
 from json import load
 
 
-@on_command('draw', aliases=('方舟十连',), only_to_me=False)
+@on_command('draw', aliases=('方舟十连','ドロー',), only_to_me=False)
 async def draw10(session: CommandSession):
     uid = str(session.ctx['sender']['user_id'])
     gid = session.ctx['group_id']

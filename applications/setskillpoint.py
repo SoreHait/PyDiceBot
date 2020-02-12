@@ -5,9 +5,12 @@ from app_addon.json_operations import dumpjson, loadjson
 
 @on_command('st', only_to_me=False)
 async def setsp(session: CommandSession):
+    mode = session.get('mode')
+    if mode == 'NoText':
+        await session.send('请输入参数')
+        return
     uid = str(session.ctx['sender']['user_id'])
     gid = session.ctx['group_id']
-    mode = session.get('mode')
     data = loadjson(gid)
     if mode == 'clr':
         try:
@@ -75,7 +78,15 @@ async def setsp(session: CommandSession):
 
 @setsp.args_parser
 async def _(session: CommandSession):
-    rawtext = session.current_arg_text.upper()
+    if session.current_arg_text == '':
+        session.state['mode'] = 'NoText'
+    elif session.current_arg_text == 'clr':
+        session.state['mode'] = 'clr'
+        return
+    elif session.current_arg_text == 'show':
+        session.state['mode'] = 'show'
+        return
+    rawtext = session.current_arg_text
     replacel = {
         '：': ':',
         'STR': '力量',
@@ -101,12 +112,8 @@ async def _(session: CommandSession):
         '÷': '/',
     }
     for key in replacel.keys():
-        rawtext = rawtext.replace(key, replacel[key])
-    if session.current_arg_text == 'clr':
-        session.state['mode'] = 'clr'
-    elif session.current_arg_text == 'show':
-        session.state['mode'] = 'show'
-    elif str(re.search(r'[\+\-\*\/]', rawtext)) != 'None':
+        rawtext = re.sub(re.compile(key, re.IGNORECASE), replacel[key], rawtext)
+    if str(re.search(r'[\+\-\*\/]', rawtext)) != 'None':
         session.state['mode'] = 'shift'
         session.state['shiftlist'] = rawtext.split(' ')
     elif session.current_arg_text.split(' ', 1)[0] == 'del':

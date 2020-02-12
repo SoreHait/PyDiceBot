@@ -1,6 +1,8 @@
 from nonebot import on_command, CommandSession
 import random
 from app_addon.json_operations import loadjson
+import re
+
 
 modifier = [
     '-5', '-4', '-4', '-3', '-3', '-2', '-2', '-1', '-1', '+0', '+0', '+1', '+1', '+2', '+2', '+3', '+3', '+4', '+4', '+5', '+5', '+6', '+6', '+7', '+7', '+8', '+8', '+9', '+9', '+10'
@@ -134,6 +136,7 @@ async def rc(session: CommandSession):
         return
     elif mode == 'NoText':
         await session.send('请输入技能名')
+        return
     gid = session.ctx['group_id']
     uid = str(session.ctx['sender']['user_id'])
     data = loadjson(gid)
@@ -193,10 +196,10 @@ async def rc(session: CommandSession):
 
 @rc.args_parser
 async def _(session: CommandSession):
-    if len(session.current_arg_text) == 0:
+    if session.current_arg_text == '':
         session.state['mode'] = 'NoText'
         return
-    rawtext = session.current_arg_text.upper()
+    rawtext = session.current_arg_text
     replacel = {
         'STR': '力量',
         'DEX': '敏捷',
@@ -216,7 +219,7 @@ async def _(session: CommandSession):
         '侦查': '侦察',
     }
     for key in replacel.keys():
-        rawtext = rawtext.replace(key, replacel[key])
+        rawtext = re.sub(re.compile(key, re.IGNORECASE), replacel[key], rawtext)
     args = rawtext.split(' ')
     length = len(args)
     if length == 1:
